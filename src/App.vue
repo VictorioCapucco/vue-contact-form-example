@@ -3,22 +3,47 @@
     <section class="contact-form-section">
       <div class="container">
         <field width="full-desktop" label="Nome completo">
-          <input />
+          <input
+            :value="form.name"
+            @input="updateVuex('name', $event.target.value)"
+          />
         </field>
         <field width="half-desktop" label="CEP">
-          <input />
+          <input
+            :value="form.cep"
+            @input="updateVuex('cep', $event.target.value)"
+          />
         </field>
         <field width="half-desktop" label="Endereço">
-          <input disabled class="disabled" />
+          <input
+            :value="form.address"
+            disabled
+            class="disabled"
+            @input="updateVuex('address', $event.target.value)"
+          />
         </field>
         <field width="half-desktop" label="Estado">
-          <input disabled class="disabled" />
+          <input
+            :value="form.state"
+            disabled
+            class="disabled"
+            @input="updateVuex('state', $event.target.value)"
+          />
         </field>
         <field width="half-desktop" label="Cidade">
-          <input disabled class="disabled" />
+          <input
+            :value="form.city"
+            disabled
+            class="disabled"
+            @input="updateVuex('city', $event.target.value)"
+          />
         </field>
         <field width="full-desktop" label="Informe suas dúvidas">
-          <textarea rows="5"></textarea>
+          <textarea
+            :value="form.doubts"
+            rows="5"
+            @input="updateVuex('doubts', $event.target.value)"
+          ></textarea>
         </field>
       </div>
     </section>
@@ -27,9 +52,21 @@
 
 <script>
   import field from "./components/field.vue";
+  import store from "/store.js";
+
   export default {
     components: {
       field,
+    },
+    computed: {
+      form() {
+        return store.state.form;
+      },
+    },
+    methods: {
+      updateVuex(key, value) {
+        store.dispatch("updateForm", { [key]: value });
+      },
     },
     name: "App",
   };
@@ -67,6 +104,7 @@
   }
   .disabled {
     cursor: not-allowed;
+    opacity: 0.5;
   }
   .container {
     display: flex;
