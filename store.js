@@ -1,3 +1,4 @@
+import axios from 'axios';
 import Vue from 'vue';
 import Vuex from 'vuex';
 Vue.use(Vuex);
@@ -7,7 +8,7 @@ const store = new Vuex.Store({
     return {
       form: {
         name: '',
-        cep: '',
+        zipcode: '',
         address: '',
         state: '',
         city: '',
@@ -27,6 +28,9 @@ const store = new Vuex.Store({
     updateForm({commit}, objectValue) {
       commit('updateForm', objectValue)
     },
+    getCep({state}) {
+      return axios.get(`https://viacep.com.br/ws/${state.form.zipcode}/json/`)
+    }
   },
 });
 

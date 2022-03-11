@@ -43,6 +43,9 @@
   .error > input {
     border: 1px solid red;
   }
+  .error > textarea {
+    border: 1px solid red;
+  }
   .error {
     color: red;
   }

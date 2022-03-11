@@ -9,13 +9,13 @@
               @input="updateVuex('name', $event.target.value)"
             />
           </field>
-          <field width="half-desktop" label="CEP">
+          <field width="half-desktop" label="CEP" rules="required">
             <input
-              :value="form.cep"
-              @input="updateVuex('cep', $event.target.value)"
+              :value="form.zipcode"
+              @input="updateVuex('zipcode', $event.target.value)"
             />
           </field>
-          <field width="half-desktop" label="Endereço">
+          <field width="half-desktop" label="Endereço" rules="required">
             <input
               :value="form.address"
               disabled
@@ -23,7 +23,7 @@
               @input="updateVuex('address', $event.target.value)"
             />
           </field>
-          <field width="half-desktop" label="Estado">
+          <field width="half-desktop" label="Estado" rules="required">
             <input
               :value="form.state"
               disabled
@@ -31,7 +31,7 @@
               @input="updateVuex('state', $event.target.value)"
             />
           </field>
-          <field width="half-desktop" label="Cidade">
+          <field width="half-desktop" label="Cidade" rules="required">
             <input
               :value="form.city"
               disabled
@@ -39,16 +39,22 @@
               @input="updateVuex('city', $event.target.value)"
             />
           </field>
-          <field width="full-desktop" label="Informe suas dúvidas">
+          <field
+            width="full-desktop"
+            label="Informe suas dúvidas"
+            rules="required"
+          >
             <textarea
               :value="form.doubts"
               rows="5"
               @input="updateVuex('doubts', $event.target.value)"
             ></textarea>
           </field>
+          <div class="button">
+            <button @click="submit">Enviar</button>
+          </div>
         </div>
       </ValidationObserver>
-      <button @click="submit">Enviar</button>
     </section>
   </div>
 </template>
@@ -61,7 +67,7 @@
 
   extend("required", {
     ...required,
-    message: "This field is required",
+    message: "Por favor, preencha este campo.",
   });
 
   export default {
@@ -69,9 +75,45 @@
       field,
       ValidationObserver,
     },
+    data() {
+      return {
+        loading: false,
+      };
+    },
     computed: {
       form() {
         return store.state.form;
+      },
+    },
+    watch: {
+      "form.zipcode"() {
+        this.updateVuex("address", "");
+        this.updateVuex("city", "");
+        this.updateVuex("state", "");
+        if (this.form.zipcode.length === 8) {
+          this.loading = true;
+          store
+            .dispatch("getCep")
+            .then((result) => {
+              if (Object.prototype.hasOwnProperty.call(result.data, "erro"))
+                console.log(result.data.erro);
+              else {
+                try {
+                  this.updateVuex("address", result.data.logradouro);
+                  this.updateVuex("city", result.data.localidade);
+                  this.updateVuex("state", result.data.uf);
+                } catch {
+                  console.log(result.data);
+                }
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            })
+            .finally(() => {
+              this.loading = false;
+            });
+        }
       },
     },
     methods: {
@@ -81,7 +123,7 @@
       submit() {
         this.$refs.contact.validate().then((success) => {
           if (success) {
-            console.log("All ok");
+            console.log("Is ALL ok");
           }
         });
       },
@@ -106,7 +148,20 @@
     box-sizing: border-box;
     font-size: 16px;
   }
-
+  .button > button {
+    background-color: black;
+    color: white;
+    padding: 20px 50px;
+    border-radius: 10px;
+    border: none;
+    font-family: Verdana;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .button {
+    width: 100%;
+    text-align: right;
+  }
   #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
