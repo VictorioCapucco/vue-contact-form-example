@@ -5,7 +5,14 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state() {
     return {
-      form: {},
+      form: {
+        name: '',
+        cep: '',
+        address: '',
+        state: '',
+        city: '',
+        doubts: '',
+      },
     };
   },
   mutations: {

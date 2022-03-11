@@ -1,62 +1,73 @@
 <template>
   <div id="app">
     <section class="contact-form-section">
-      <div class="container">
-        <field width="full-desktop" label="Nome completo">
-          <input
-            :value="form.name"
-            @input="updateVuex('name', $event.target.value)"
-          />
-        </field>
-        <field width="half-desktop" label="CEP">
-          <input
-            :value="form.cep"
-            @input="updateVuex('cep', $event.target.value)"
-          />
-        </field>
-        <field width="half-desktop" label="Endereço">
-          <input
-            :value="form.address"
-            disabled
-            class="disabled"
-            @input="updateVuex('address', $event.target.value)"
-          />
-        </field>
-        <field width="half-desktop" label="Estado">
-          <input
-            :value="form.state"
-            disabled
-            class="disabled"
-            @input="updateVuex('state', $event.target.value)"
-          />
-        </field>
-        <field width="half-desktop" label="Cidade">
-          <input
-            :value="form.city"
-            disabled
-            class="disabled"
-            @input="updateVuex('city', $event.target.value)"
-          />
-        </field>
-        <field width="full-desktop" label="Informe suas dúvidas">
-          <textarea
-            :value="form.doubts"
-            rows="5"
-            @input="updateVuex('doubts', $event.target.value)"
-          ></textarea>
-        </field>
-      </div>
+      <ValidationObserver ref="contact">
+        <div class="container">
+          <field width="full-desktop" label="Nome completo" rules="required">
+            <input
+              :value="form.name"
+              @input="updateVuex('name', $event.target.value)"
+            />
+          </field>
+          <field width="half-desktop" label="CEP">
+            <input
+              :value="form.cep"
+              @input="updateVuex('cep', $event.target.value)"
+            />
+          </field>
+          <field width="half-desktop" label="Endereço">
+            <input
+              :value="form.address"
+              disabled
+              class="disabled"
+              @input="updateVuex('address', $event.target.value)"
+            />
+          </field>
+          <field width="half-desktop" label="Estado">
+            <input
+              :value="form.state"
+              disabled
+              class="disabled"
+              @input="updateVuex('state', $event.target.value)"
+            />
+          </field>
+          <field width="half-desktop" label="Cidade">
+            <input
+              :value="form.city"
+              disabled
+              class="disabled"
+              @input="updateVuex('city', $event.target.value)"
+            />
+          </field>
+          <field width="full-desktop" label="Informe suas dúvidas">
+            <textarea
+              :value="form.doubts"
+              rows="5"
+              @input="updateVuex('doubts', $event.target.value)"
+            ></textarea>
+          </field>
+        </div>
+      </ValidationObserver>
+      <button @click="submit">Enviar</button>
     </section>
   </div>
 </template>
 
 <script>
   import field from "./components/field.vue";
+  import { ValidationObserver, extend } from "vee-validate";
+  import { required } from "vee-validate/dist/rules";
   import store from "/store.js";
+
+  extend("required", {
+    ...required,
+    message: "This field is required",
+  });
 
   export default {
     components: {
       field,
+      ValidationObserver,
     },
     computed: {
       form() {
@@ -66,6 +77,13 @@
     methods: {
       updateVuex(key, value) {
         store.dispatch("updateForm", { [key]: value });
+      },
+      submit() {
+        this.$refs.contact.validate().then((success) => {
+          if (success) {
+            console.log("All ok");
+          }
+        });
       },
     },
     name: "App",
@@ -86,7 +104,7 @@
     outline: none;
     padding: 9px 14px;
     box-sizing: border-box;
-    font-size: 14px;
+    font-size: 16px;
   }
 
   #app {
