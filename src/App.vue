@@ -56,11 +56,13 @@
         </div>
       </ValidationObserver>
     </section>
+    <loading :active="loading" />
   </div>
 </template>
 
 <script>
   import field from "./components/field.vue";
+  import loading from "./components/loading.vue";
   import { ValidationObserver, extend } from "vee-validate";
   import { required } from "vee-validate/dist/rules";
   import store from "/store.js";
@@ -74,6 +76,7 @@
     components: {
       field,
       ValidationObserver,
+      loading,
     },
     data() {
       return {
@@ -123,7 +126,10 @@
       submit() {
         this.$refs.contact.validate().then((success) => {
           if (success) {
-            console.log("Is ALL ok");
+            this.loading = true;
+            setTimeout(() => {
+              this.loading = false;
+            }, 3000);
           }
         });
       },
