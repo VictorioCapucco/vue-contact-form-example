@@ -10,3 +10,5 @@ https://axios-http.com/
 https://v3.vuex.vuejs.org/
 <br />
 https://v2.vuejs.org/
+<br />
+https://vee-validate.logaretm.com/v3/
