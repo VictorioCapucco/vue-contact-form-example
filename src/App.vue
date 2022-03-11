@@ -12,6 +12,7 @@
           <field width="half-desktop" label="CEP" rules="required">
             <input
               :value="form.zipcode"
+              placeholder="Preencha apenas os números"
               @input="updateVuex('zipcode', $event.target.value)"
             />
           </field>
@@ -57,12 +58,19 @@
       </ValidationObserver>
     </section>
     <loading :active="loading" />
+    <modal v-if="openModal">
+      <p>{{ modalMessage }}</p>
+      <div class="button">
+        <button @click="openModal = false">Ok</button>
+      </div>
+    </modal>
   </div>
 </template>
 
 <script>
   import field from "./components/field.vue";
   import loading from "./components/loading.vue";
+  import modal from "./components/modal.vue";
   import { ValidationObserver, extend } from "vee-validate";
   import { required } from "vee-validate/dist/rules";
   import store from "/store.js";
@@ -77,10 +85,13 @@
       field,
       ValidationObserver,
       loading,
+      modal,
     },
     data() {
       return {
         loading: false,
+        openModal: false,
+        modalMessage: "",
       };
     },
     computed: {
@@ -98,20 +109,25 @@
           store
             .dispatch("getCep")
             .then((result) => {
-              if (Object.prototype.hasOwnProperty.call(result.data, "erro"))
-                console.log(result.data.erro);
-              else {
+              if (Object.prototype.hasOwnProperty.call(result.data, "erro")) {
+                this.openModal = true;
+                this.modalMessage = "Cep inválido!";
+              } else {
                 try {
                   this.updateVuex("address", result.data.logradouro);
                   this.updateVuex("city", result.data.localidade);
                   this.updateVuex("state", result.data.uf);
                 } catch {
-                  console.log(result.data);
+                  this.openModal = true;
+                  this.modalMessage =
+                    "Não foi possível concluir a sua solicitação.";
                 }
               }
             })
-            .catch((error) => {
-              console.log(error);
+            .catch(() => {
+              this.openModal = true;
+              this.modalMessage =
+                "Não foi possível concluir a sua solicitação.";
             })
             .finally(() => {
               this.loading = false;
@@ -129,6 +145,12 @@
             this.loading = true;
             setTimeout(() => {
               this.loading = false;
+              this.openModal = true;
+              this.modalMessage = "Suas dúvidas foram enviadas com sucesso!";
+              console.log(this.form);
+              store.dispatch("cleanForm");
+              this.$refs.contact.reset();
+              console.log(this.form);
             }, 3000);
           }
         });

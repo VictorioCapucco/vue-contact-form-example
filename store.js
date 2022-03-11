@@ -21,7 +21,6 @@ const store = new Vuex.Store({
       for (let i = 0; i < Object.keys(value).length; i++) {
         state.form[Object.keys(value)[i]] = value[Object.keys(value)[i]]
       }
-      console.log(state.form)
     },
   },
   actions: {
@@ -30,6 +29,17 @@ const store = new Vuex.Store({
     },
     getCep({state}) {
       return axios.get(`https://viacep.com.br/ws/${state.form.zipcode}/json/`)
+    },
+    cleanForm({commit}) {
+      const form =   {
+        name: '',
+        zipcode: '',
+        address: '',
+        state: '',
+        city: '',
+        doubts: '',
+      }
+      commit('updateForm', form)
     }
   },
 });
