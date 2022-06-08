@@ -1,5 +1,6 @@
 {
   "name": "vue-contact-form-example",
+  "author": "Victorio Capucço",
   "version": "0.1.0",
   "private": true,
   "scripts": {
